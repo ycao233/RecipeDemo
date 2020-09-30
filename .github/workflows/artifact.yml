@@ -1,0 +1,54 @@
+name: hello lab artifacts
+
+on: [workflow_dispatch, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        echo "create 10MB of artifact"
+        mkdir 10MB
+        dd if=/dev/random of=10MB/10mb_artifact.bin bs=1024 count=10240 iflag=fullblock
+        echo "create 50MB of artifact"
+        mkdir 50MB
+        dd if=/dev/random of=50MB/50mb_artifact.bin bs=1024 count=51200 iflag=fullblock
+        ls -l 10MB 50MB
+        
+    - name: "upload 50MB"
+      uses: actions/upload-artifact@main
+      with:
+        name: 60mb_artifacts
+        path: 50MB
+        retention-days: 1
+    - name: "upload 10MB"
+      uses: actions/upload-artifact@main
+      with:
+        name: 60mb_artifacts
+        path: 10MB
+    
+    - name: "upload 50MB 2nd time"
+      uses: actions/upload-artifact@v2
+      with:
+        name: 60mb_artifacts_2
+        path: 50MB
+    - name: "upload 10MB 2nd time"
+      uses: actions/upload-artifact@v2
+      with:
+        name: 60mb_artifacts_2
+        path: 10MB
+            
+    - name: "download artifact"
+      uses: actions/download-artifact@v2
+      with:
+        name: 60mb_artifacts
+        path: artifact     
+    - name: "download artifact 2"
+      uses: actions/download-artifact@v2
+      with:
+        name: 60mb_artifacts_2
+        path: artifact2 
+      
+    - run: |
+       ls -l artifact artifact2
