@@ -1,4 +1,4 @@
-name: hello lab artifacts
+name: hello artifacts
 
 on: [workflow_dispatch, push]
 
